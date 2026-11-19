@@ -4,13 +4,14 @@ Course material for the Cajal course "Neurobiology of Sleep" (Bordeaux, Nov–De
 
 ## Setup
 
+> **Where to put the course folder:** wherever you like, **but not in a folder synced by iCloud, OneDrive, Dropbox or Google Drive.** On many laptops, *Desktop* and *Documents* are synced. Syncing the thousands of files in `.venv` slows everything down and can break the environment.
+
 ### macOS
 1. **git:** open Terminal and run `git --version`. If a dialog asks to install the Command Line Tools, click *Install* and wait.
 2. **uv:** `curl -LsSf https://astral.sh/uv/install.sh | sh`, then **close and reopen Terminal**.
 3. **VS Code:** install from https://code.visualstudio.com, then add the **Python** and **Jupyter** extensions.
-4. **Get the course code:**
+4. **Get the course code:** in Terminal, go to the folder where you want the course (`cd <your folder>`), then
    ```bash
-   mkdir -p ~/courses && cd ~/courses
    git clone https://github.com/fma00/sleep-eeg-analysis.git
    cd sleep-eeg-analysis
    ```
@@ -21,14 +22,11 @@ Course material for the Cajal course "Neurobiology of Sleep" (Bordeaux, Nov–De
    `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`,
    then **close and reopen PowerShell**.
 3. **VS Code:** install the *User Installer* from https://code.visualstudio.com (tick "Add to PATH"), then add the **Python** and **Jupyter** extensions.
-4. **Get the course code:**
+4. **Get the course code:** in PowerShell, go to the folder where you want the course (`cd <your folder>`), then
    ```powershell
-   mkdir $HOME\courses -Force; cd $HOME\courses
    git clone https://github.com/fma00/sleep-eeg-analysis.git
    cd sleep-eeg-analysis
    ```
-
-> **Why not Documents or Desktop?** These folders are often synced to iCloud (Mac) or OneDrive (Windows). Syncing the thousands of files in `.venv` slows everything down and can break the environment. A plain folder in your home directory avoids this.
 
 ### Linux
 Works on x86_64 with Ubuntu 22.04+, Debian 12+, Fedora 35+ or similar (glibc 2.34 or newer). Older systems such as Ubuntu 20.04 are not supported.
@@ -41,7 +39,7 @@ Works on x86_64 with Ubuntu 22.04+, Debian 12+, Fedora 35+ or similar (glibc 2.3
    On Fedora: `sudo dnf install git curl mesa-libEGL libxkbcommon-x11 xcb-util-cursor xcb-util-wm xcb-util-image xcb-util-keysyms xcb-util-renderutil`
 2. **uv:** `curl -LsSf https://astral.sh/uv/install.sh | sh`, then open a new terminal.
 3. **VS Code:** install the .deb/.rpm from https://code.visualstudio.com, then add the **Python** and **Jupyter** extensions.
-4. **Get the course code:** same as macOS (`mkdir -p ~/courses && cd ~/courses && git clone …`).
+4. **Get the course code:** same as macOS (`cd <your folder>`, then `git clone …`).
 
 If the check says `Could not load the Qt platform plugin "xcb"`, a library from step 1 is missing.
 
