@@ -13,9 +13,16 @@ Options:
 """
 
 import importlib
+import importlib.util
 import platform
+import shutil
+import subprocess
 import sys
 from pathlib import Path
+
+# Windows consoles/pipes may use cp1252, which can't print emoji
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 REPO = Path(__file__).resolve().parent
 DATA = REPO / "data"
@@ -31,6 +38,32 @@ def fail(msg):
     print(f"  ❌ {msg}")
 
 
+def lightgbm_loads():
+    """Import lightgbm in a fresh process (a failed native load can't be retried in-process)."""
+    r = subprocess.run([sys.executable, "-c", "import lightgbm"], capture_output=True, text=True)
+    return r.returncode == 0
+
+
+def fix_lightgbm_macos():
+    """lightgbm's macOS wheels need libomp (OpenMP) but don't ship it; they only look in
+    Homebrew/MacPorts folders. scikit-learn ships its own libomp, so point lightgbm there."""
+    lgbm_spec = importlib.util.find_spec("lightgbm")
+    sk_spec = importlib.util.find_spec("sklearn")
+    if lgbm_spec is None or sk_spec is None:
+        return False
+    lib = Path(lgbm_spec.origin).parent / "lib" / "lib_lightgbm.dylib"
+    omp = Path(sk_spec.origin).parent / ".dylibs" / "libomp.dylib"
+    tool = shutil.which("install_name_tool")
+    if not (lib.exists() and omp.exists() and tool):
+        print("  ⚠️  Can't repair automatically (Command Line Tools missing?). "
+              "Run `xcode-select --install`, or `brew install libomp`, then re-run this check.")
+        return False
+    rpath = "@loader_path/" + str(Path("..", "..", "sklearn", ".dylibs"))
+    subprocess.run([tool, "-add_rpath", rpath, str(lib)], capture_output=True)
+    subprocess.run(["codesign", "--force", "--sign", "-", str(lib)], capture_output=True)
+    return lightgbm_loads()
+
+
 print("== System ==")
 print(f"  Python {platform.python_version()} on {platform.system()} {platform.release()} ({platform.machine()})")
 if not (3, 12) <= sys.version_info[:2] < (3, 14):
@@ -39,6 +72,9 @@ if ".venv" not in sys.prefix:
     print(f"  ⚠️  Not running from the project's .venv ({sys.prefix}). Use `uv run python check_setup.py`.")
 
 print("== Packages ==")
+if sys.platform == "darwin" and not lightgbm_loads():
+    print("  🔧 lightgbm can't find the OpenMP library (libomp); repairing...")
+    print("  ✅ lightgbm repaired" if fix_lightgbm_macos() else "  ❌ lightgbm repair failed")
 for name in PACKAGES:
     try:
         mod = importlib.import_module(name)
