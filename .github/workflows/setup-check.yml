@@ -1,4 +1,4 @@
-# Runs the student setup (uv sync + check_setup.py) on fresh Windows and macOS machines.
+# Runs the student setup (uv sync + check_setup.py) on fresh Windows, macOS and Linux machines.
 name: setup-check
 
 on:
@@ -32,3 +32,33 @@ jobs:
 
       - name: Smoke test
         run: uv run python check_setup.py --auto-close
+
+  # Linux: Qt draws through X11 (xcb), which needs a few system libraries.
+  # Run on a virtual X display first WITHOUT installing them (to see what a fresh
+  # machine is missing), then with the libraries the README tells students to install.
+  linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Download one Sleep-EDF night
+        run: |
+          base=https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette
+          curl -sSfL --retry 3 -o data/SC4001E0-PSG.edf       $base/SC4001E0-PSG.edf
+          curl -sSfL --retry 3 -o data/SC4001EC-Hypnogram.edf $base/SC4001EC-Hypnogram.edf
+      - name: Virtual display only
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq xvfb > /dev/null
+      - name: Smoke test before installing Qt system libraries (diagnostic)
+        continue-on-error: true
+        env:
+          QT_DEBUG_PLUGINS: "0"
+        run: xvfb-run -a uv run python check_setup.py --auto-close
+      - name: Install Qt system libraries (as in the README)
+        run: sudo apt-get install -y -qq libxcb-cursor0 libxkbcommon-x11-0 libegl1 libgl1 libfontconfig1 libdbus-1-3 > /dev/null
+      - name: Smoke test (X11 display)
+        run: xvfb-run -a uv run python check_setup.py --auto-close
