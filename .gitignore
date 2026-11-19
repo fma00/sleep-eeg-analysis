@@ -14,3 +14,6 @@ data/*
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# Solutions: pushed after each session with `git add -f solutions/<file>`
+solutions/
