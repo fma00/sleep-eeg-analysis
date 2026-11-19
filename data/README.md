@@ -9,7 +9,7 @@ Data files are not tracked by git.
 ## `SC-subjects.csv` (tracked in git)
 
 One row per night: `subject, night, age, sex_F, LightsOff`
-(`sex_F`: 1 = female, 0 = male; `LightsOff`: clock time of lights-off).
+(`sex_F`: 1 = female, 2 = male, as in the original; `LightsOff`: clock time of lights-off).
 
 Converted from `SC-subjects.xls` of Sleep-EDF Expanded v1.0.0 (PhysioNet).
 Changes: converted to CSV; column `sex (F=1)` renamed to `sex_F`. Values unchanged.
