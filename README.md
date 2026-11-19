@@ -47,7 +47,8 @@ If the check says `Could not load the Qt platform plugin "xcb"`, a library from 
 
 ### All systems
 5. **Create the environment:** `uv sync` (downloads Python and all packages into `.venv`, takes 1–3 min)
-6. **Data:** unzip the course data into the `data/` folder
+6. **Data:** you'll get the data as a **zip file during the course**. Unzip it into the `data/` folder.
+   After the course, you can download the data yourself; see [data/README.md](data/README.md).
 7. **Check:** `uv run python check_setup.py`. An MNE window with EEG signals opens. Close it, and you should see `✅ Setup OK`.
 8. **VS Code:** *File → Open Folder* → `sleep-eeg-analysis`. Open a notebook and select the `.venv` kernel (top right).
    If you installed uv while VS Code was open, **quit and restart VS Code** so it sees the new PATH.
