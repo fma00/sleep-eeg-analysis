@@ -1,0 +1,43 @@
+[project]
+name = "sleep-eeg-analysis"
+version = "0.1.0"
+description = "Sleep EEG Analysis: From Signal Processing to Machine Learning and Deep Learning (Cajal course, Bordeaux 2026)"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    # EEG I/O, processing and interactive browsing
+    "mne>=1.13,<1.14",
+    "mne-qt-browser>=0.7",
+    "PyQt6>=6.7",
+    # Sleep analysis (artefacts need pyriemann via the [art] extra, staging needs lightgbm)
+    "yasa[art]>=0.8.1,<0.9",
+    "lightgbm>=4.5",
+    # Scientific stack
+    "numpy>=2.0",
+    "scipy>=1.13",
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "scikit-learn>=1.5",
+    # Notebooks in VS Code
+    "ipykernel>=6.29",
+]
+
+# torch (CNN, Wednesday) and streamlit (dashboard, Thursday) are added later
+# with `uv add`, to keep Friday's install small.
+
+[tool.uv]
+package = false
+# The lock must contain ready-made wheels for every student laptop type
+# (Apple Silicon and Intel Macs from macOS 12, Windows x64), so `uv sync` never compiles.
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sys_platform == 'win32' and platform_machine == 'AMD64'",
+]
+constraint-dependencies = [
+    # PyQt6 >= 6.12 only ships macOS 14+ wheels; 6.11 works from macOS 10.14
+    "PyQt6<6.12",
+    # numba/llvmlite (pulled in by yasa) dropped Intel-Mac wheels after 0.62 / 0.45
+    "numba<0.63; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "llvmlite<0.46; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]

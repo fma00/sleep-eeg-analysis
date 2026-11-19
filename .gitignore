@@ -1,0 +1,15 @@
+# Environment
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Data (distributed via Google Drive / USB, never committed)
+data/*
+!data/README.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json

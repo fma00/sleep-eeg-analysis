@@ -1,0 +1,34 @@
+# Runs the student setup (uv sync + check_setup.py) on fresh Windows and macOS machines.
+name: setup-check
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    env:
+      QT_QPA_PLATFORM: offscreen   # CI machines have no screen; this still loads and runs the Qt browser
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv (same installer as the students)
+        uses: astral-sh/setup-uv@v6
+
+      - name: uv sync
+        run: uv sync --locked
+
+      - name: Download one Sleep-EDF night
+        shell: bash
+        run: |
+          base=https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette
+          curl -sSfL --retry 3 -o data/SC4001E0-PSG.edf       $base/SC4001E0-PSG.edf
+          curl -sSfL --retry 3 -o data/SC4001EC-Hypnogram.edf $base/SC4001EC-Hypnogram.edf
+
+      - name: Smoke test
+        run: uv run python check_setup.py --auto-close
