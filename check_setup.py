@@ -5,7 +5,8 @@ Run from the repository folder:
     uv run python check_setup.py
 
 It checks the Python version and packages, loads one Sleep-EDF night from
-data/ and opens the interactive MNE browser. Close the browser window to finish.
+data/ (or, if there is no data yet, creates a synthetic EEG signal) and opens
+the interactive MNE browser. Close the browser window to finish.
 
 Options:
     --no-gui       skip opening the browser (for automated tests)
@@ -89,11 +90,25 @@ print("== Data ==")
 psg_files = sorted(DATA.glob("**/*-PSG.edf"))
 hyp_files = sorted(DATA.glob("**/*-Hypnogram.edf"))
 print(f"  Found {len(psg_files)} PSG and {len(hyp_files)} hypnogram files in {DATA}")
-if not psg_files:
-    fail("No *-PSG.edf files found. Unzip the course data into the data/ folder.")
 
 raw = None
-if ok:
+if ok and not psg_files:
+    # No course data yet: test the browser with a synthetic signal (as in the Session 1 notebook)
+    import mne
+    import numpy as np
+
+    mne.set_log_level("ERROR")
+    print("  ⚠️  No course data yet (fine for now): using a synthetic EEG signal instead.")
+    print("      Copy the data into data/ later and re-run this check to test loading a real night.")
+    sfreq = 100
+    t = np.arange(0, 60, 1 / sfreq)
+    rng = np.random.default_rng(seed=0)
+    noise = 5 * rng.standard_normal((2, t.size))
+    eeg = np.vstack([20 * np.sin(2 * np.pi * 10 * t), np.zeros_like(t)]) + noise  # 10 Hz "alpha" + noise, µV
+    info = mne.create_info(["Fake EEG 1", "Fake EEG 2"], sfreq, ch_types="eeg")
+    raw = mne.io.RawArray(eeg * 1e-6, info)  # MNE works in volts
+    print(f"  ✅ Created a synthetic signal: {raw.times[-1]:.0f} s, {sfreq} Hz, channels {raw.ch_names}")
+elif ok:
     import mne
 
     mne.set_log_level("ERROR")

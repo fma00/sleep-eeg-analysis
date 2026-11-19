@@ -6,8 +6,9 @@ EOG, EMG, …, ~50 MB) and a `*-Hypnogram.edf` file (expert sleep scoring).
 Data files are not tracked by git.
 
 ## During the course
-You'll get the data **as a zip file during the course** (download link or USB stick). Unzip it into this `data/` folder,
+You'll get the data **on a USB stick during the course**. Copy it into this `data/` folder (unzip it first if it's a zip),
 so that the `*-PSG.edf` and `*-Hypnogram.edf` files are inside `data/` (subfolders are fine).
+`check_setup.py` works without data too (it then uses a synthetic signal), so you can finish the setup while the copy runs.
 
 ## After the course: downloading the data yourself
 The data are freely available. Downloading straight from PhysioNet is slow (about 3 minutes per night), so start with a few nights.
