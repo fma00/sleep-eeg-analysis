@@ -15,5 +15,8 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 
+# Your own output files from the notebooks (e.g. saved annotations)
+results/
+
 # Solutions: pushed after each session with `git add -f solutions/<file>`
 solutions/
