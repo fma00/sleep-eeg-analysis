@@ -18,5 +18,8 @@ Thumbs.db
 # Your own output files from the notebooks (e.g. saved annotations)
 results/
 
+# Your own choice of nights for the cohort pipeline (created by notebooks/cohort_pipeline.ipynb)
+database.csv
+
 # Solutions: pushed after each session with `git add -f solutions/<file>`
 solutions/

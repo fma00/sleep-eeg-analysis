@@ -107,3 +107,49 @@ def epoch_onsets(epochs):
     """Clock time (pd.Timestamp) of the start of each epoch, as in the Session 2 table."""
     sfreq = epochs.info["sfreq"]
     return pd.Timestamp(epochs.info["meas_date"]) + pd.to_timedelta(epochs.events[:, 0] / sfreq, unit="s")
+
+
+# ---------------------------------------------------------------- from Session 4 on
+def artifact_rejection(epochs, picks=("Fpz-Cz", "Pz-Oz"), window=7, thr_slow=2.5, thr_fast=2.0,
+                       slow_band=(0.5, 4.5), fast_band=(20, 40)):
+    """The course artefact detector (Session 3, Section 5): indices of the bad epochs.
+
+    An epoch is bad if its mean power in the slow band (movement, sweat) is > thr_slow x, or in the fast band
+    (muscle) > thr_fast x, the mean power of the epochs around it (± `window` epochs, itself included).
+    Power is averaged over the EEG channels in `picks`.
+
+    Based on the NSRR pipeline: Mariani et al. (2018), Sleep Medicine 47:126-136,
+    https://doi.org/10.1016/j.sleep.2017.11.1128
+
+    Use the result to drop epochs from EEG-based features (spectra, band power, spindles, slow waves).
+    Do NOT edit the hypnogram with it: sleep statistics use the unedited expert hypnogram.
+    """
+    from scipy.signal import welch
+
+    sf = epochs.info["sfreq"]
+    data = epochs.get_data(picks=list(picks))  # (n_epochs, n_channels, n_samples)
+    freqs, psd = welch(data, sf, nperseg=int(4 * sf))
+    psd = psd.mean(axis=1)  # mean over the channels: (n_epochs, n_freqs)
+
+    def band_mean(band):  # same frequency bins as in the Session 3 notebook
+        lo = np.where(freqs >= band[0])[0][0]
+        hi = np.where(freqs <= band[1])[0][-1]
+        return psd[:, lo:hi].mean(axis=1)
+
+    bad = np.zeros(len(data), dtype=bool)
+    for power, thr in [(band_mean(slow_band), thr_slow), (band_mean(fast_band), thr_fast)]:
+        local_mean = np.array([power[max(i - window, 0):i + window + 1].mean() for i in range(len(power))])
+        bad |= power / local_mean > thr
+    return np.flatnonzero(bad)
+
+
+def bad_epochs_table(epochs, stages):
+    """One row per epoch: onset (clock), stage, custom, movement, bad. Same columns as Session 3's file.
+
+    bad = the course detector (artifact_rejection) OR a scorers' "Movement time" epoch (ART).
+    """
+    table = pd.DataFrame({"onset": epoch_onsets(epochs).strftime("%H:%M:%S"), "stage": stages})
+    table["custom"] = np.isin(np.arange(len(table)), artifact_rejection(epochs))
+    table["movement"] = table["stage"] == "ART"
+    table["bad"] = table["custom"] | table["movement"]
+    return table
