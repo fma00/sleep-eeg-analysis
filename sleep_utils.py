@@ -153,3 +153,19 @@ def bad_epochs_table(epochs, stages):
     table["movement"] = table["stage"] == "ART"
     table["bad"] = table["custom"] | table["movement"]
     return table
+
+
+# ---------------------------------------------------------------- from Session 5 on
+def load_epochs(subject, night, l_freq=0.1, h_freq=40):
+    """The usual start of an analysis in one call: load, filter, 30-s epochs, bad epochs.
+
+        epochs, stages, artefacts = load_epochs(0, 2)   # SC4002
+        clean = ~artefacts["bad"].to_numpy()
+
+    = load_subject -> filter EEG/EOG l_freq-h_freq Hz -> make_epochs -> bad_epochs_table (the detector based on
+    Mariani et al., 2018 + movement time). `artefacts` has one row per epoch: onset, stage, custom, movement, bad.
+    """
+    raw = load_subject(subject, night)
+    raw.filter(l_freq=l_freq, h_freq=h_freq, picks=["eeg", "eog"])
+    epochs, stages = make_epochs(raw)
+    return epochs, stages, bad_epochs_table(epochs, stages)

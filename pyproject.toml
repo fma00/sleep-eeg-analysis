@@ -20,6 +20,8 @@ dependencies = [
     "scikit-learn>=1.5",
     # Notebooks in VS Code
     "ipykernel>=6.29",
+    # Aperiodic (1/f) fits, Session 5. 2.x is still a release candidate (same API as the lab code)
+    "specparam>=2.0.0rc7",
 ]
 
 # torch (CNN, Wednesday) and streamlit (dashboard, Thursday) are added later

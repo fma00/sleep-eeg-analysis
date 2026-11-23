@@ -1286,6 +1286,7 @@ dependencies = [
     { name = "pyqt6" },
     { name = "scikit-learn" },
     { name = "scipy" },
+    { name = "specparam" },
     { name = "yasa", extra = ["art"] },
 ]
 
@@ -1301,7 +1302,22 @@ requires-dist = [
     { name = "pyqt6", specifier = ">=6.7" },
     { name = "scikit-learn", specifier = ">=1.5" },
     { name = "scipy", specifier = ">=1.13" },
+    { name = "specparam", specifier = ">=2.0.0rc7" },
     { name = "yasa", extras = ["art"], specifier = ">=0.8.1,<0.9" },
+]
+
+[[package]]
+name = "specparam"
+version = "2.0.0rc7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.3.5", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'" },
+    { name = "numpy", version = "2.5.5", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'x86_64' or sys_platform != 'darwin'" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b1/91/9200511f5e5eb0a4d779f0a404639fc1980090a239d009359831f86346cd/specparam-2.0.0rc7.tar.gz", hash = "sha256:00744b009c1822ef69478df7b7b5399e1d14fb061747d4606e9fc76772bbcc95", size = 159075, upload-time = "2026-06-09T23:59:14.276Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2c/bf/f0daae29fa2f2da3e0c31ed591498fb4bebe1d4e2be48aa553ae03a48692/specparam-2.0.0rc7-py3-none-any.whl", hash = "sha256:a8d4535ec36cce2037d3a6dce190a08749a3f71f3d0f527978ee36b51c1590cf", size = 216761, upload-time = "2026-06-09T23:59:12.829Z" },
 ]
 
 [[package]]
