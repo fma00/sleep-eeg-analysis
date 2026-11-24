@@ -169,3 +169,31 @@ def load_epochs(subject, night, l_freq=0.1, h_freq=40):
     raw.filter(l_freq=l_freq, h_freq=h_freq, picks=["eeg", "eog"])
     epochs, stages = make_epochs(raw)
     return epochs, stages, bad_epochs_table(epochs, stages)
+
+
+# ---------------------------------------------------------------- from Session 7 on
+YASA_CODES = {"WAKE": 0, "N1": 1, "N2": 2, "N3": 3, "REM": 4, "ART": -1, "UNS": -2}  # YASA's integer stages
+
+
+def load_continuous(subject, night, picks=("Fpz-Cz", "Pz-Oz"), l_freq=0.1, h_freq=40):
+    """For event detection (spindles, slow waves): the continuous signal + a hypnogram with one value per sample.
+
+        raw, hypno, stages, artefacts = load_continuous(0, 2)   # SC4002
+        sp = yasa.spindles_detect(raw, hypno=hypno, include=(2,))
+
+    Same night, filter and bad epochs as load_epochs. `hypno` has YASA's integer codes (0 WAKE, 1 N1, 2 N2,
+    3 N3, 4 REM), one per sample of `raw`, and -1 in the bad epochs (detector OR movement time). So with
+    include=(2, 3), YASA only looks for events in the clean N2/N3 epochs. Samples outside any 30-s epoch are -2.
+    `stages` and `artefacts` are the same as load_epochs gives (one row per epoch).
+    """
+    raw = load_subject(subject, night)
+    raw.filter(l_freq=l_freq, h_freq=h_freq, picks=["eeg", "eog"])
+    epochs, stages = make_epochs(raw)
+    artefacts = bad_epochs_table(epochs, stages)
+
+    hypno = np.full(len(raw.times), YASA_CODES["UNS"], dtype=int)
+    n = int(round(30 * raw.info["sfreq"]))  # samples per epoch
+    starts = epochs.events[:, 0] - raw.first_samp  # first sample of each epoch, from the start of `raw`
+    for start, stage, bad in zip(starts, stages, artefacts["bad"]):
+        hypno[start:start + n] = YASA_CODES["ART"] if bad else YASA_CODES[stage]
+    return raw.pick(list(picks)), hypno, stages, artefacts

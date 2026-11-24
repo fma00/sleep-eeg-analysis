@@ -1,3 +1,9 @@
+# AI agents: the Elephant/Goldfish workflows in .claude/commands/ and CLAUDE.md are shared (committed);
+# your personal agent settings and the workflows' scratch files are not
+.claude/settings.local.json
+CLAUDE.local.md
+.elephant-goldfish/
+
 # Environment
 .venv/
 __pycache__/
