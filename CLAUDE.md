@@ -75,7 +75,8 @@ deviate, that's fine, but it must be explicit and documented.
 **Spindles and slow waves**
 - YASA `spindles_detect` / `sw_detect` on the continuous signal from `sleep_utils.load_continuous` (its per-sample
   hypnogram has −1 in the bad epochs, so only clean epochs are searched), in N2 and N3.
-- The cohort features use YASA's **default parameters** (`microstructure_features`, Session 7). Density = events
+- Spindle band **12–16 Hz** (`freq_sp=(12, 16)`; YASA's default is 12–15 Hz). Everything else: YASA's **default
+  parameters**. Density = events
   per minute of clean N2 or N3. Any other threshold is a scientific choice: state it, and keep the default
   version for comparison. YASA's spindle thresholds are mostly relative to the night's own signal, its
   slow-wave thresholds are absolute (µV).
