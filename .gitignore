@@ -29,3 +29,9 @@ database.csv
 
 # Solutions: pushed after each session with `git add -f solutions/<file>`
 solutions/
+
+# app related files that are not part of the analysis
+app/app_complete.py
+app/make_age_predictions.py
+app/make_night_details.py
+precomputed/night_details.npz

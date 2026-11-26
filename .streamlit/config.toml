@@ -1,0 +1,7 @@
+# Streamlit reads this when you start the app from the course folder: dark page, same colours as the figures.
+[theme]
+base = "dark"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1A1F2B"
+textColor = "#FFFFFF"
+primaryColor = "#56B4E9"

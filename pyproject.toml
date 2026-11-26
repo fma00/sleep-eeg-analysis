@@ -22,9 +22,10 @@ dependencies = [
     "ipykernel>=6.29",
     # Aperiodic (1/f) fits, Session 5. 2.x is still a release candidate (same API as the lab code)
     "specparam>=2.0.0rc7",
+    "streamlit>=1.67.0",
 ]
 
-# torch (CNN, Wednesday) and streamlit (dashboard, Thursday) are added later
+# torch (CNN, Wednesday) is added later
 # with `uv add`, to keep Friday's install small.
 
 [tool.uv]
